@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAppStore } from '../stores/useAppStore';
+import { SearchFilter } from '../types';
 
 export default function Header() {
-  const [searchFilters, setSearchFilters] = useState({
+  const [searchFilters, setSearchFilters] = useState<SearchFilter>({
     ingredient: '',
     category: '',
   });
   const { pathname } = useLocation();
   const isHome = useMemo(() => pathname === '/', [pathname]);
 
-  const { fetchCategories, categories } = useAppStore();
+  const { fetchCategories, categories, searchRecipes } = useAppStore();
 
   useEffect(() => {
     fetchCategories();
@@ -22,6 +23,18 @@ export default function Header() {
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
     setSearchFilters({ ...searchFilters, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    //Todo: Validad
+    if (Object.values(searchFilters).includes('')) {
+      console.log('Todos los campos son obligatorios');
+      return;
+    }
+    // COnsultar la receta
+    searchRecipes(searchFilters);
   };
 
   return (
@@ -57,7 +70,10 @@ export default function Header() {
           </nav>
         </div>
         {isHome && (
-          <form className="md:w-1/2 2xl:w-1/3 bg-orange-400 my-32 p-10 rounded-lg shadow space-y-6">
+          <form
+            className="md:w-1/2 2xl:w-1/3 bg-orange-400 my-32 p-10 rounded-lg shadow space-y-6"
+            onSubmit={handleSubmit}
+          >
             <div className="space-y-4">
               <label
                 htmlFor="ingredient"
