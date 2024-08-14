@@ -1,15 +1,31 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import IndexPages from './views/IndexPages';
-import FavoritesPage from './views/FavoritesPage';
 import Layout from './layouts/Layout';
 
+import { lazy, Suspense } from 'react';
+const IndexPages = lazy(() => import('./views/IndexPages'));
+const FavoritesPage = lazy(() => import('./views/FavoritesPage'));
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<IndexPages />} index />
-          <Route path="/Favoritos" element={<FavoritesPage />} />
+          <Route
+            path="/"
+            element={
+              <Suspense fallback="Cargando...">
+                <IndexPages />
+              </Suspense>
+            }
+            index
+          />
+          <Route
+            path="/Favoritos"
+            element={
+              <Suspense fallback="Cargando...">
+                <FavoritesPage />
+              </Suspense>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>
